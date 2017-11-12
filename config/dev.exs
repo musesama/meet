@@ -51,8 +51,8 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :meet, Meet.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "microblog",
+  password: "eihuofaeP7",
   database: "meet_dev",
   hostname: "localhost",
   pool_size: 10

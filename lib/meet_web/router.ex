@@ -15,7 +15,8 @@ defmodule MeetWeb.Router do
 
   scope "/", MeetWeb do
     pipe_through :browser # Use the default browser stack
-
+    resources "/rooms", RoomController
+    
     get "/", PageController, :index
   end
 

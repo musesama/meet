@@ -60,4 +60,66 @@ defmodule Meet.RoomsTest do
       assert %Ecto.Changeset{} = Rooms.change_room(room)
     end
   end
+
+  describe "markers" do
+    alias Meet.Rooms.Marker
+
+    @valid_attrs %{lat: 120.5, lon: 120.5}
+    @update_attrs %{lat: 456.7, lon: 456.7}
+    @invalid_attrs %{lat: nil, lon: nil}
+
+    def marker_fixture(attrs \\ %{}) do
+      {:ok, marker} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Rooms.create_marker()
+
+      marker
+    end
+
+    test "list_markers/0 returns all markers" do
+      marker = marker_fixture()
+      assert Rooms.list_markers() == [marker]
+    end
+
+    test "get_marker!/1 returns the marker with given id" do
+      marker = marker_fixture()
+      assert Rooms.get_marker!(marker.id) == marker
+    end
+
+    test "create_marker/1 with valid data creates a marker" do
+      assert {:ok, %Marker{} = marker} = Rooms.create_marker(@valid_attrs)
+      assert marker.lat == 120.5
+      assert marker.lon == 120.5
+    end
+
+    test "create_marker/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Rooms.create_marker(@invalid_attrs)
+    end
+
+    test "update_marker/2 with valid data updates the marker" do
+      marker = marker_fixture()
+      assert {:ok, marker} = Rooms.update_marker(marker, @update_attrs)
+      assert %Marker{} = marker
+      assert marker.lat == 456.7
+      assert marker.lon == 456.7
+    end
+
+    test "update_marker/2 with invalid data returns error changeset" do
+      marker = marker_fixture()
+      assert {:error, %Ecto.Changeset{}} = Rooms.update_marker(marker, @invalid_attrs)
+      assert marker == Rooms.get_marker!(marker.id)
+    end
+
+    test "delete_marker/1 deletes the marker" do
+      marker = marker_fixture()
+      assert {:ok, %Marker{}} = Rooms.delete_marker(marker)
+      assert_raise Ecto.NoResultsError, fn -> Rooms.get_marker!(marker.id) end
+    end
+
+    test "change_marker/1 returns a marker changeset" do
+      marker = marker_fixture()
+      assert %Ecto.Changeset{} = Rooms.change_marker(marker)
+    end
+  end
 end

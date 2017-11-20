@@ -52,17 +52,18 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 // from connect if you don't care about authentication.
 
 socket.connect()
+var channel = undefined;
 $(function() {
   if (!$("#map").length > 0) {
 	return;
   }
   let dd = $($("#map")[0]);
   let r_id = dd.data('room-id');
-  let channel = socket.channel("room:"+r_id, {})
+  channel = socket.channel("room:"+r_id, {});
   channel.join()
     .receive("ok", resp => { console.log("Joined successfully", resp) })
     .receive("error", resp => { console.log("Unable to join", resp) })
-});
+ });
 
 function initAutocomplete() {
   var map = new google.maps.Map(document.getElementById('map'), {
@@ -70,6 +71,30 @@ function initAutocomplete() {
     zoom: 13,
     mapTypeId: 'roadmap'
   });
+  navigator.geolocation.getCurrentPosition(pos => {
+    var d = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+    map.setCenter(d);
+  });
+  function continus_send_pos() {
+    function sendpos(pos) {
+      channel.push("geoloc", {handler:'a', lat: pos.coords.latitude, lon: pos.coords.longitude})
+    }
+    navigator.geolocation.getCurrentPosition(sendpos);
+    setTimeout(continus_send_pos, 5000);
+  }
+  continus_send_pos();
+  var geolocs = {}
+  channel.on("geoloc", v => {
+    var m = geolocs[v['handler']]
+    if (m != undefined) {
+      m.setMap(null);
+    }
+    geolocs[v['handler']] = new google.maps.Marker({
+      position: {lat: v['lat'], lng: v['lon']},
+      map: map,
+      title: v['handler']
+    })
+  })
 
   // Create the search box and link it to the UI element.
   var input = document.getElementById('pac-input');

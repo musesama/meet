@@ -1,12 +1,17 @@
 defmodule MeetWeb.RoomChannel do
   use MeetWeb, :channel
 
-  def join("room:lobby", payload, socket) do
+  def join("room:" <> room_id, payload, socket) do
     if authorized?(payload) do
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
     end
+  end
+  
+  def handle_in("geoloc", payload, socket) do
+    broadcast socket, "geoloc", payload
+    {:noreply, socket}
   end
 
   # Channels can be used in a request/response fashion

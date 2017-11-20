@@ -52,20 +52,20 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 // from connect if you don't care about authentication.
 
 socket.connect()
-var channel = undefined;
-$(function() {
+
+
+function initAutocomplete() {
   if (!$("#map").length > 0) {
 	return;
   }
   let dd = $($("#map")[0]);
   let r_id = dd.data('room-id');
-  channel = socket.channel("room:"+r_id, {});
+  let path = dd.data('path');
+  let channel = socket.channel("room:"+r_id, {});
   channel.join()
     .receive("ok", resp => { console.log("Joined successfully", resp) })
     .receive("error", resp => { console.log("Unable to join", resp) })
- });
 
-function initAutocomplete() {
   var map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: -33.8688, lng: 151.2195},
     zoom: 13,
@@ -106,12 +106,6 @@ function initAutocomplete() {
     searchBox.setBounds(map.getBounds());
   });
 
-  let dd = $($("#map")[0]);
-  let path = dd.data('path');
-  let r_id = dd.data('room-id');
-
-  var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var labelIndex = 0;
 
   var remote_markers = [];
   function fetch_markers() {

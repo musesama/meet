@@ -134,7 +134,7 @@ function initAutocomplete() {
       method: "GET",
       success: got_markers,
     });
-    // setTimeout(fetch_markers, 5000);
+    setTimeout(fetch_markers, 5000);
   }
   fetch_markers()
   function add_marker(e) {

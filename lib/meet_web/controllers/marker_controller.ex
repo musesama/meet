@@ -6,6 +6,15 @@ defmodule MeetWeb.MarkerController do
 
   action_fallback MeetWeb.FallbackController
 
+  def index(conn, %{"room_id" => room_id}) do
+    {r_id, _} = Integer.parse room_id
+    markers = Rooms.list_markers() |> Enum.filter(fn
+      %{:room_id => ^r_id} -> true
+      _ -> false
+    end)
+    render(conn, "index.json", markers: markers)
+  end
+
   def index(conn, _params) do
     markers = Rooms.list_markers()
     render(conn, "index.json", markers: markers)

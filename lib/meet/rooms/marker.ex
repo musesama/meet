@@ -15,7 +15,7 @@ defmodule Meet.Rooms.Marker do
   @doc false
   def changeset(%Marker{} = marker, attrs) do
     marker
-    |> cast(attrs, [:lon, :lat])
-    |> validate_required([:lon, :lat])
+    |> cast(attrs, [:lon, :lat, :room_id])
+    |> validate_required([:lon, :lat, :room_id])
   end
 end

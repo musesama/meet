@@ -52,11 +52,141 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 // from connect if you don't care about authentication.
 
 socket.connect()
+$(function() {
+  if (!$("#map").length > 0) {
+	return;
+  }
+  let dd = $($("#map")[0]);
+  let r_id = dd.data('room-id');
+  let channel = socket.channel("room:"+r_id, {})
+  channel.join()
+    .receive("ok", resp => { console.log("Joined successfully", resp) })
+    .receive("error", resp => { console.log("Unable to join", resp) })
+});
 
-// Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("topic:subtopic", {})
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.log("Unable to join", resp) })
+function initAutocomplete() {
+  var map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: -33.8688, lng: 151.2195},
+    zoom: 13,
+    mapTypeId: 'roadmap'
+  });
 
+  // Create the search box and link it to the UI element.
+  var input = document.getElementById('pac-input');
+  var searchBox = new google.maps.places.SearchBox(input);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+  // Bias the SearchBox results towards current map's viewport.
+  map.addListener('bounds_changed', function() {
+    searchBox.setBounds(map.getBounds());
+  });
+
+  let dd = $($("#map")[0]);
+  let path = dd.data('path');
+  let r_id = dd.data('room-id');
+
+  var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var labelIndex = 0;
+
+  var remote_markers = [];
+  function fetch_markers() {
+    function got_markers(data) {
+      console.log(data)
+      data = data['data']
+      remote_markers.forEach(function(marker) {
+	marker.setMap(null);
+      });
+      remote_markers = [];
+      data.forEach(function(v) {
+	remote_markers.push(new google.maps.Marker({
+	  position: {lat: v['lat'], lng: v['lon']},
+	  map: map,
+	  title: 'Hello World!'
+      }))});
+    }
+
+    $.ajax({
+      url: path,
+      data: {room_id: r_id},
+      contentType: "application/json",
+      dataType: "JSON",
+      method: "GET",
+      success: got_markers,
+    });
+  }
+  fetch_markers()
+  function add_marker(e) {
+    let data = {marker: {room_id: r_id, lon: e.latLng.lng(), lat: e.latLng.lat()}};
+
+    $.ajax({
+      url: path,
+      data: JSON.stringify(data),
+      contentType: "application/json",
+      dataType: "json",
+      method: "POST",
+      success: fetch_markers,
+    });
+  }
+  map.addListener('click', add_marker);
+    
+  var markers = [];
+  var myLatLng = {lat: -33.8688, lng: 151.2195};
+  var customMarker = new google.maps.Marker({
+    position: myLatLng,
+    map: map,
+    title: 'Hello World!'
+  });
+  customMarker.addListener('click', function() {
+    alert('clicked');
+  });
+  // Listen for the event fired when the user selects a prediction and retrieve
+  // more details for that place.
+  searchBox.addListener('places_changed', function() {
+    var places = searchBox.getPlaces();
+
+    if (places.length == 0) {
+      return;
+    }
+
+    // Clear out the old markers.
+    markers.forEach(function(marker) {
+      marker.setMap(null);
+    });
+    markers = [];
+
+    // For each place, get the icon, name and location.
+    var bounds = new google.maps.LatLngBounds();
+    places.forEach(function(place) {
+      if (!place.geometry) {
+	console.log("Returned place contains no geometry");
+	return;
+      }
+      var icon = {
+	url: place.icon,
+	size: new google.maps.Size(71, 71),
+	origin: new google.maps.Point(0, 0),
+	anchor: new google.maps.Point(17, 34),
+	scaledSize: new google.maps.Size(25, 25)
+      };
+
+      // Create a marker for each place.
+      markers.push(new google.maps.Marker({
+	map: map,
+	icon: icon,
+	title: place.name,
+	position: place.geometry.location
+      }));
+
+      if (place.geometry.viewport) {
+	// Only geocodes have viewport.
+	bounds.union(place.geometry.viewport);
+      } else {
+	bounds.extend(place.geometry.location);
+      }
+    });
+    map.fitBounds(bounds);
+  });
+}
+
+export {initAutocomplete}
 export default socket

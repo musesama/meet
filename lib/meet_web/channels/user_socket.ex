@@ -2,7 +2,7 @@ defmodule MeetWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", MeetWeb.RoomChannel
+  channel "room:*", MeetWeb.RoomChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

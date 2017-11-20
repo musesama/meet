@@ -31,5 +31,6 @@
 
     </div> <!-- /container -->
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIUDircYsqbrRFaytqk7LpyGRf5mgG_0A&libraries=places&callback=initAutocomplete" async defer></script>
   </body>
 </html>

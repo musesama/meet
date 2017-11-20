@@ -1,5 +1,3 @@
-<h2>Show Room</h2>
-
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -57,5 +55,5 @@
 
 </ul>
 
-<span><%= link "Edit", to: room_path(@conn, :edit, @room) %></span>
+<!--<span><%= link "Edit", to: room_path(@conn, :edit, @room) %></span>-->
 <span><%= link "Back", to: room_path(@conn, :index) %></span>

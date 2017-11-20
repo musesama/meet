@@ -1,8 +1,7 @@
-<p>click to join a room</p>
 <table class="table">
   <thead>
     <tr>
-      <th></th>
+      <th>Rooms</th>
     </tr>
   </thead>
   <tbody>

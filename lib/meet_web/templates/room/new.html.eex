@@ -2,4 +2,5 @@
 
 <%= render "form.html", Map.put(assigns, :action, room_path(@conn, :create)) %>
 
+<script>document.getElementsByClassName('btn')[0].click()</script>
 <span><%= link "Back", to: room_path(@conn, :index) %></span>

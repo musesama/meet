@@ -50,10 +50,10 @@
       }
     </style>
 <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-    <div id="map" data-path="<%= marker_path(@conn, :index) %>" data-room-id="<%= @room.id %>"></div>
-    <ul>
+<div id="map" data-path="<%= marker_path(@conn, :index) %>" data-room-id="<%= @room.id %>"></div>
+<p>Your handler:</p>
+<input id=handler> <br/>
 
-</ul>
 
 <!--<span><%= link "Edit", to: room_path(@conn, :edit, @room) %></span>-->
 <span><%= link "Back", to: room_path(@conn, :index) %></span>

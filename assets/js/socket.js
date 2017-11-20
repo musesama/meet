@@ -75,15 +75,18 @@ function initAutocomplete() {
     var d = {lat: pos.coords.latitude, lng: pos.coords.longitude};
     map.setCenter(d);
   });
+  var geolocs = {}
   function continus_send_pos() {
+    for (var v in geolocs) {
+      geolocs[v].setMap(null);
+    }
     function sendpos(pos) {
-      channel.push("geoloc", {handler:'a', lat: pos.coords.latitude, lon: pos.coords.longitude})
+      channel.push("geoloc", {handler:$('#handler')[0].value||"noname", lat: pos.coords.latitude, lon: pos.coords.longitude})
     }
     navigator.geolocation.getCurrentPosition(sendpos);
     setTimeout(continus_send_pos, 5000);
   }
   continus_send_pos();
-  var geolocs = {}
   channel.on("geoloc", v => {
     var m = geolocs[v['handler']]
     if (m != undefined) {
@@ -92,7 +95,7 @@ function initAutocomplete() {
     geolocs[v['handler']] = new google.maps.Marker({
       position: {lat: v['lat'], lng: v['lon']},
       map: map,
-      title: v['handler']
+      label: v['handler']
     })
   })
 
@@ -110,7 +113,6 @@ function initAutocomplete() {
   var remote_markers = [];
   function fetch_markers() {
     function got_markers(data) {
-      console.log(data)
       data = data['data']
       remote_markers.forEach(function(marker) {
 	marker.setMap(null);
@@ -132,7 +134,7 @@ function initAutocomplete() {
       method: "GET",
       success: got_markers,
     });
-    setTimeout(fetch_markers, 5000);
+    // setTimeout(fetch_markers, 5000);
   }
   fetch_markers()
   function add_marker(e) {

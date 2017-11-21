@@ -119,11 +119,19 @@ function initAutocomplete() {
       });
       remote_markers = [];
       data.forEach(function(v) {
-	remote_markers.push(new google.maps.Marker({
+	var m = new google.maps.Marker({
 	  position: {lat: v['lat'], lng: v['lon']},
 	  map: map,
 	  title: 'Hello World!'
-      }))});
+	})
+	m.addListener('click', () => {
+	  $.ajax({
+	    url: path+'/'+v.id,
+	    method: "DELETE"
+	  });
+	})
+	remote_markers.push(m);
+      });
     }
 
     $.ajax({
